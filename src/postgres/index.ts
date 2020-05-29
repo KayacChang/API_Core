@@ -12,7 +12,7 @@ async function init(config: PoolConfig) {
 
   pool = new native.Pool({
     ...config,
-    connectionTimeoutMillis: 6 * 1000
+    connectionTimeoutMillis: 6 * 1000,
   });
 
   while (true) {
@@ -26,7 +26,6 @@ async function init(config: PoolConfig) {
 
       return;
     } catch (err) {
-      //
       console.error(err);
 
       console.log(`Retry connection after 1000 milliseconds`);
@@ -44,5 +43,5 @@ function table(tablename: string) {
 
 export default {
   init,
-  table
+  table,
 };

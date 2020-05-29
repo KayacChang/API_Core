@@ -1,4 +1,5 @@
 import User from "./user";
 import Order from "./order";
+import SubOrder from "./suborder";
 
-export { User, Order };
+export { User, Order, SubOrder };
