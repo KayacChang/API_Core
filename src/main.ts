@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import PG from "./postgres";
 import Redis from "./redis";
-import { User, Order } from "./models";
+import { User, Order, SubOrder } from "./models";
 
 async function main(env: NodeJS.Dict<string>) {
   //
@@ -12,24 +12,25 @@ async function main(env: NodeJS.Dict<string>) {
       host: env.PG_HOST,
       database: env.PG_NAME,
       password: env.PG_PASSWORD,
-      port: Number(env.PG_PORT)
+      port: Number(env.PG_PORT),
     }),
     //
     Redis.init({
       host: env.REDIS_HOST,
       port: Number(env.REDIS_PORT),
-      sleep: Number(env.SLEEP)
-    })
+      sleep: Number(env.SLEEP),
+    }),
   ]);
 
   const models = {
     users: User,
-    orders: Order
+    orders: Order,
+    sub_orders: SubOrder,
   };
 
   for (const [tablename, Model] of Object.entries(models)) {
     //
-    Redis.observe(tablename, async res => {
+    Redis.observe(tablename, async (res) => {
       //
       const data = JSON.parse(res);
 
@@ -37,9 +38,8 @@ async function main(env: NodeJS.Dict<string>) {
       console.table(data);
 
       console.log(`=== Check if data existed in Postgres.${tablename} ===`);
-
       const existed = await PG.table(tablename).exist({
-        [Model.pk]: data[Model.pk]
+        [Model.pk]: data[Model.pk],
       });
 
       if (existed) {
